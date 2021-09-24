@@ -3,6 +3,18 @@ set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS ON)
 
 project(zlib C)
 
+set(
+    ROGII_FOLDER_PATH
+    "${CMAKE_CURRENT_LIST_DIR}/rogii"
+)
+include(${ROGII_FOLDER_PATH}/npm/Include.cmake)
+include(${ROGII_FOLDER_PATH}/environment.cmake)
+
+CNPM_PREPARE_PACKAGES(
+    DEFAULT_REPOSITORY_URLS
+    "$ENV{CNPM_URLS}"
+)
+
 set(VERSION "1.2.8")
 
 option(ASM686 "Enable building i686 assembly implementation")
@@ -215,6 +227,15 @@ if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL )
         RUNTIME DESTINATION "${INSTALL_BIN_DIR}"
         ARCHIVE DESTINATION "${INSTALL_LIB_DIR}"
         LIBRARY DESTINATION "${INSTALL_LIB_DIR}" )
+    if(MSVC)
+        install(
+            FILES
+                $<TARGET_PDB_FILE:zlib>
+            DESTINATION
+                "${INSTALL_BIN_DIR}"
+        )
+    endif()
+
 endif()
 if(NOT SKIP_INSTALL_HEADERS AND NOT SKIP_INSTALL_ALL )
     install(FILES ${ZLIB_PUBLIC_HDRS} DESTINATION "${INSTALL_INC_DIR}")
